@@ -5,6 +5,8 @@ __pycache__/
 
 # C extensions
 *.so
+# MacOS
+.DS_Store
 
 # Distribution / packaging
 .Python
@@ -74,6 +76,7 @@ target/
 
 # pyenv
 .python-version
+assignment1/
 
 # celery beat schedule file
 celerybeat-schedule
