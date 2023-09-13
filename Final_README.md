@@ -11,7 +11,7 @@ We extended two features:
 
 - Albumy: https://github.com/greyli/albumy.git.
 - BLIP-2 from LAVIS: https://github.com/salesforce/LAVIS.
-- YOLOv7:
+- YOLOv7: https://github.com/WongKinYiu/yolov7/tree/main.
 
 ## Installation
 
