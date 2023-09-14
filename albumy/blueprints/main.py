@@ -21,6 +21,10 @@ from albumy.utils import rename_image, resize_image, redirect_back, flash_errors
 
 main_bp = Blueprint('main', __name__)
 
+# Added: ML module
+from albumy.ml.image_caption import load_caption_tools, caption_image
+# load the captioning model
+caption_model, caption_vis_processors = load_caption_tools()
 
 @main_bp.route('/')
 def index():
@@ -122,15 +126,24 @@ def upload():
     if request.method == 'POST' and 'file' in request.files:
         f = request.files.get('file')
         filename = rename_image(f.filename)
-        f.save(os.path.join(current_app.config['ALBUMY_UPLOAD_PATH'], filename))
+        f_path = os.path.join(current_app.config['ALBUMY_UPLOAD_PATH'], filename) # need this to pull image for captioning model
+        f.save(f_path)
         filename_s = resize_image(f, filename, current_app.config['ALBUMY_PHOTO_SIZE']['small'])
-        filename_m = resize_image(f, filename, current_app.config['ALBUMY_PHOTO_SIZE']['medium'])
+        filename_m = resize_image(f, filename, current_app.config['ALBUMY_PHOTO_SIZE']['medium']) # TODO: maybe medium photo will be faster?
         photo = Photo(
             filename=filename,
             filename_s=filename_s,
             filename_m=filename_m,
             author=current_user._get_current_object()
         )
+
+        # Added: Run ML model
+        caption = caption_image(caption_model, caption_vis_processors, f_path) # using original image path here
+        # TEST: should be able to see this in terminal
+        print(caption)
+        # TODO: Save caption
+        # TODO: Implement object tagging
+
         db.session.add(photo)
         db.session.commit()
     return render_template('main/upload.html')

@@ -74,6 +74,12 @@ steps:
 
 3. Install LAVIS from source code (check the LAVIS github readme).
 
+After LAVIS is installed, I recommend downloading the pretrained weight yourself (link here: https://storage.googleapis.com/sfr-vision-language-research/BLIP/models/model_base_capfilt_large.pth), then change the `model.pretrained` argument in the file `LAVIS/lavis/configs/models/blip_caption_base_coco.yaml` to the relative path to your downloaded weight.
+
+- For example pretrained: "my-path-to/model_base_capfilt_large.pth"
+
+Now your model should load from the local file, instead of downloading.
+
 ---
 
 generate fake data then run:
