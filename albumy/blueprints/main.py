@@ -21,8 +21,9 @@ from albumy.utils import rename_image, resize_image, redirect_back, flash_errors
 
 main_bp = Blueprint('main', __name__)
 
-# Added: ML module
+# ML module
 from albumy.ml.image_caption import load_caption_tools, caption_image
+from albumy.ml.object_detection import query
 # load the captioning model
 caption_model, caption_vis_processors = load_caption_tools()
 
@@ -130,19 +131,30 @@ def upload():
         f.save(f_path)
         filename_s = resize_image(f, filename, current_app.config['ALBUMY_PHOTO_SIZE']['small'])
         filename_m = resize_image(f, filename, current_app.config['ALBUMY_PHOTO_SIZE']['medium']) # TODO: maybe medium photo will be faster?
+
+        # Added: Run ML model
+        caption = caption_image(caption_model, caption_vis_processors, f_path) # using original image path here
+
         photo = Photo(
             filename=filename,
             filename_s=filename_s,
             filename_m=filename_m,
-            author=current_user._get_current_object()
+            author=current_user._get_current_object(),
+            caption=caption,
         )
 
-        # Added: Run ML model
-        caption = caption_image(caption_model, caption_vis_processors, f_path) # using original image path here
-        # TEST: should be able to see this in terminal
-        print(caption)
-        # TODO: Save caption
-        # TODO: Implement object tagging
+        # Object detection to generate tags
+        tags = query(f_path)
+        # Save tags
+        for t in tags:
+            tag = Tag.query.filter_by(name=t).first()
+            if tag is None:
+                tag = Tag(name=t)
+                db.session.add(tag)
+                db.session.commit()
+            if tag not in photo.tags:
+                photo.tags.append(tag)
+                db.session.commit()
 
         db.session.add(photo)
         db.session.commit()
