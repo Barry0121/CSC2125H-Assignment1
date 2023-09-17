@@ -7,13 +7,13 @@ This is a ML app based on the open source Albumy Flask web application.
 We extended two features:
 
 1. Image caption generation with BLIP-2 pre-trained model.
-2. Image keyword search powered by YOLOv7 object detection.
+2. Image keyword search powered by HuggingFace/Facebook's DETR object detection API.
 
-### Cite
+### Source
 
 - Albumy: https://github.com/greyli/albumy.git.
 - BLIP-2 from LAVIS: https://github.com/salesforce/LAVIS.
-- YOLOv7: https://github.com/WongKinYiu/yolov7/tree/main.
+- DETR (ResNet50) from Facebook hosted by HuggingFace: https://huggingface.co/facebook/detr-resnet-50.
 
 ## Installation
 
@@ -100,6 +100,8 @@ Create a file `api-key.key` at the home directory with your HuggingFace API key 
     "key": "[your key]"
 }
 ```
+
+- You can find this key on the model page on HuggingFace (https://huggingface.co/facebook/detr-resnet-50). Click `Deploy` -> `Inference API`, and your key is copiable there.
 
 ---
 
