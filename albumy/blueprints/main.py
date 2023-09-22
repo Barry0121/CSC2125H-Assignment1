@@ -18,14 +18,21 @@ from albumy.forms.main import DescriptionForm, TagForm, CommentForm
 from albumy.models import User, Photo, Tag, Follow, Collect, Comment, Notification
 from albumy.notifications import push_comment_notification, push_collect_notification
 from albumy.utils import rename_image, resize_image, redirect_back, flash_errors
+import time
+import warnings
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    print("Loading ML module...")
+    start_time = time.time()
+    # ML module
+    from albumy.ml.image_caption import load_caption_tools, caption_image
+    from albumy.ml.object_detection import query
+    print(f"Finish import in {round(time.time()-start_time, 3)}.")
+    # load the captioning model
+    caption_model, caption_vis_processors = load_caption_tools() # TODO: parallelize this
+    print(f"ML module loaded! Took: {round(time.time()-start_time, 3)}.")
 
 main_bp = Blueprint('main', __name__)
-
-# ML module
-from albumy.ml.image_caption import load_caption_tools, caption_image
-from albumy.ml.object_detection import query
-# load the captioning model
-caption_model, caption_vis_processors = load_caption_tools()
 
 @main_bp.route('/')
 def index():
