@@ -151,21 +151,56 @@ def upload():
         )
 
         # Object detection to generate tags
-        tags = query(f_path)
+        # tags = query(f_path)
         # Save tags
-        for t in tags:
-            tag = Tag.query.filter_by(name=t).first()
-            if tag is None:
-                tag = Tag(name=t)
-                db.session.add(tag)
-                db.session.commit()
-            if tag not in photo.tags:
-                photo.tags.append(tag)
-                db.session.commit()
+        # for t in tags:
+        #     tag = Tag.query.filter_by(name=t).first()
+        #     if tag is None:
+        #         tag = Tag(name=t)
+        #         db.session.add(tag)
+        #         db.session.commit()
+        #     if tag not in photo.tags:
+        #         photo.tags.append(tag)
+        #         db.session.commit()
 
         db.session.add(photo)
         db.session.commit()
     return render_template('main/upload.html')
+
+@main_bp.route('/photo/g/<int:photo_id>', methods=['POST'])
+@login_required
+def generate_tags(photo_id):
+    photo = Photo.query.get_or_404(photo_id)
+    filename = photo.filename
+    f_path = os.path.join(current_app.config['ALBUMY_UPLOAD_PATH'], filename)
+
+    # Object detection to generate tags
+    tags = query(f_path)
+    # Save tags
+    for t in tags:
+        tag = Tag.query.filter_by(name=t).first()
+        if tag is None:
+            tag = Tag(name=t)
+            db.session.add(tag)
+            db.session.commit()
+        if tag not in photo.tags:
+            photo.tags.append(tag)
+            db.session.commit()
+
+    page = request.args.get('page', 1, type=int)
+    per_page = current_app.config['ALBUMY_COMMENT_PER_PAGE']
+    pagination = Comment.query.with_parent(photo).order_by(Comment.timestamp.asc()).paginate(page, per_page)
+    comments = pagination.items
+
+    comment_form = CommentForm()
+    description_form = DescriptionForm()
+    tag_form = TagForm()
+
+    description_form.description.data = photo.description
+    return render_template('main/photo.html', photo=photo, comment_form=comment_form,
+                           description_form=description_form, tag_form=tag_form,
+                           pagination=pagination, comments=comments)
+
 
 
 @main_bp.route('/photo/<int:photo_id>')
