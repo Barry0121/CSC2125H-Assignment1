@@ -1,6 +1,4 @@
-# Assignment 1 - Albumy ML App
-
-![Screenshot](https://helloflask.com/screenshots/albumy.png)
+# Imporoved Albumy - Automatic Caption Generation with BLIP-2 and DETR
 
 This is a ML app based on the open source Albumy Flask web application.
 
