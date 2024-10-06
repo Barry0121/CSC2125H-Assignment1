@@ -18,8 +18,8 @@ We extended two features:
 clone:
 
 ```
-$ git clone https://github.com/Barry0121/CSC2125H-Assignment1.git
-$ cd CSC2125H-Assignment1
+$ git clone https://github.com/Barry0121/albumy-autocaption.git
+$ cd albumy-autocaption
 ```
 
 ---
